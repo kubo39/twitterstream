@@ -13,7 +13,7 @@ import nuuid
 import sha1
 
 
-const userAgent = "twitter.nim/0.1.0"
+const userAgent = "twitterstream.nim/0.1.0"
 
 
 type
