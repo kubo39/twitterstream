@@ -25,6 +25,11 @@ type
                                         ## and ``postContent`` proc,
                                         ## when the server returns an error
 
+  HttpHeaders = tuple[
+    version: string,
+    status: string,
+    headers: StringTableRef]
+
   ConsumerTokenImpl = object
     consumerKey: string
     consumerSecret: string
@@ -161,15 +166,14 @@ proc newHeaders(httpMethod, url: string, keys: seq[string], params: StringTableR
   result = headers
 
 
-proc parseHeader(s: Socket) =
+proc parseHeader(s: Socket): HttpHeaders =
   var parsedStatus = false
   var linei = 0
   var fullyRead = false
   var line = ""
   var timeout = -1
-  var headers = newStringTable(modeCaseInsensitive)
-  var version = ""
-  var status = ""
+
+  result.headers = newStringTable(modeCaseInsensitive)
 
   while true:
     line = ""
@@ -185,15 +189,15 @@ proc parseHeader(s: Socket) =
       if le <= 0: httpError("invalid http version")
       inc(linei, le)
       le = skipIgnoreCase(line, "1.1", linei)
-      if le > 0: version = "1.1"
+      if le > 0: result.version = "1.1"
       else:
         le = skipIgnoreCase(line, "1.0", linei)
         if le <= 0: httpError("unsupported http version")
-        version = "1.0"
+        result.version = "1.0"
       inc(linei, le)
       # Status code
       linei.inc skipWhitespace(line, linei)
-      status = line[linei .. ^1]
+      result.status = line[linei .. ^1]
       parsedStatus = true
     else:
       # Parse headers
@@ -203,7 +207,7 @@ proc parseHeader(s: Socket) =
       inc(linei, le)
       if line[linei] != ':': httpError("invalid headers")
       inc(linei) # Skip :
-      headers[name] = line[linei.. ^1].strip()
+      result.headers[name] = line[linei.. ^1].strip()
 
 
 proc stream*(client: TwitterAPI, httpMethod, url: string,
@@ -234,7 +238,12 @@ proc stream*(client: TwitterAPI, httpMethod, url: string,
     socket.connect(r.hostname, port)
     echo headers
     socket.send(headers)
-    parseHeader(socket)
+    var headers = parseHeader(socket)
+
+    echo headers
+    if headers.status != "200 OK":
+      socket.close()
+      httpError("invalid request.")
 
     # parse body
     var line = ""
