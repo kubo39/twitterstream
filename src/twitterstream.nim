@@ -138,7 +138,7 @@ proc buildParams(consumerKey, accessToken: string,
   return params
 
 
-proc newHeaders*(httpMethod, url: string, keys: seq[string], params: StringTableRef = nil): string =
+proc newHeaders(httpMethod, url: string, keys: seq[string], params: StringTableRef = nil): string =
   let authorizeKeys = keys.filter(proc(x: string): bool = x.startsWith("oauth_"))
   let authorize = "OAuth " & authorizeKeys.map(proc(it: string): string = it & "=" & params[it]).join(",")
 
