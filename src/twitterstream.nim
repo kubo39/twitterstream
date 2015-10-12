@@ -236,11 +236,9 @@ proc stream*(client: TwitterAPI, httpMethod, url: string,
 
   return iterator(): string =
     socket.connect(r.hostname, port)
-    echo headers
     socket.send(headers)
     var headers = parseHeader(socket)
 
-    echo headers
     if headers.status != "200 OK":
       socket.close()
       httpError("invalid request.")
