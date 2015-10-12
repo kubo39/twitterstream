@@ -1,0 +1,5 @@
+*~
+src/twitterstream
+examples/userstream
+examples/credential.json
+nimcache/
