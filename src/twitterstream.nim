@@ -232,7 +232,7 @@ proc stream*(client: TwitterAPI, httpMethod, url: string,
   sslContext.wrapSocket(socket)
 
   let port = net.Port(443)
-  var r = parseUri(url)
+  var r = parseUri(url $ "?" & path)
 
   return iterator(): string =
     socket.connect(r.hostname, port)
