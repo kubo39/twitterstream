@@ -1,14 +1,14 @@
-# twittersream.nim
+# twittersream
 
-(WIP) A twitter streaming API wrapper library for nim.
+(WIP) A twitter streaming API wrapper library for Nim.
 
 ## Installation
 
 from github:
 
 ```
-$ git clone git://github.com/kubo39/twitterstream.nim
-$ cd twittersteam.nim && nimble install
+$ git clone git://github.com/kubo39/twitterstream
+$ cd twittersteam && nimble install
 ```
 
 ## Example
